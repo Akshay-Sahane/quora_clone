@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+{{ block.super }}
+<a href="/">Home</a>
+{% endblock nav %}
+
+{% block main %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ question.title }} - Quora Clone</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: white;
+            padding: 2rem 3rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .meta {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 1rem;
+        }
+
+        .question-body {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .likes {
+            font-size: 15px;
+            margin-top: 1rem;
+            color: #555;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 14px;
+            background-color: #0077cc;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #005fa3;
+        }
+    </style>
+    {% load custom_filters %}
+
+</head>
+<body>
+<div class="container">
+    <h2>{{ question.title }}</h2>
+    <div class="meta">
+        Asked by {{ question.created_by.username }} on {{ question.created_at|date:"M d, Y H:i" }}
+    </div>
+    <div class="question-body">
+        {{ question.description|linebreaks }}
+    </div>
+
+    <div class="answers">
+        <h3>Answers ({{ question.answers.count }})</h3>
+        {% if question.answers.exists %}
+
+        {% if not question|has_answered:user %}
+        <form method="post" action="{% url 'question_answer' question.id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Submit Answer</button>
+        </form>
+        {% endif %}
+
+        {% for answer in question.answers.all %}
+        <div class="answer">
+            <div class="meta">
+                Answered by {{ answer.created_by.username }} on {{ answer.created_at|date:"M d, Y H:i" }}
+            </div>
+            <div class="answer-body">
+                {{ answer.content|linebreaks }}
+            </div>
+
+            <div class="likes">
+                👍 {{ answer.upvotes|get_active_count }} upvotes
+            </div>
+
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'answer_upvote' answer.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn">
+                    {% if answer.upvotes.all|has_upvoted:user %}
+                    🔽 Remove Upvote
+                    {% else %}
+                    🔼 Upvote
+                    {% endif %}
+                </button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}" class="btn">Login to upvote</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>No answers yet. Be the first to answer!</p>
+        <div class="container">
+            <form method="post" action="{% url 'question_answer' question.id %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Submit Question</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+
+
+{% endblock %}

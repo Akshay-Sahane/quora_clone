@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+{{ block.super }}
+<a href="/">Home</a>
+{% endblock nav %}
+
+{% block main %}
+<head>
+    <meta charset="UTF-8">
+    <title>My Questions - Quora Clone</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .question {
+            padding: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .question:last-child {
+            border-bottom: none;
+        }
+
+        .question-title a {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0077cc;
+            text-decoration: none;
+        }
+
+        .question-title a:hover {
+            text-decoration: underline;
+        }
+
+        .pagination {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .pagination a, .pagination span {
+            margin: 0 5px;
+            padding: 8px 12px;
+            text-decoration: none;
+            border-radius: 5px;
+            color: #0077cc;
+        }
+
+        .pagination .current {
+            font-weight: bold;
+            background-color: #0077cc;
+            color: white;
+        }
+
+        .pagination a:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>My Asked Questions</h2>
+
+        {% if page_obj %}
+            {% for question in page_obj %}
+                <div class="question">
+                    <div class="question-title">
+                        <a href="{% url 'question_detail' question.id %}">{{ question.title }}</a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No questions found.</p>
+        {% endif %}
+
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</body>
+
+{% endblock main %}

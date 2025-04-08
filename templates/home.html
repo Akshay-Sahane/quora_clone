@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block nav%}
+<div class="navbar">
+    <div>
+        <strong>Quora Clone</strong>
+    </div>
+    <div class="links">
+        {% if user.is_authenticated %}
+        Hello, <strong>{{ user.username }}</strong>
+        <a class="button-link" href="/ask">
+            <button class="button">Ask Question</button>
+        </a>
+        <a class="button-link" href="/my_questions">
+            <button class="button">My Questions</button>
+        </a>
+        <form method="post" action="/users/logout/" style="display: inline;">
+            {% csrf_token %}
+            <button class="button" type="submit">Logout</button>
+        </form>
+        {% else %}
+        <a href="/users/login">Login</a>
+        <a href="/users/register">Signup</a>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock nav %}
+
+
+{% block main %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quora Clone - Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            background-color: #fff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .links a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #0077cc;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 2rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .button {
+            background-color: #0077cc;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+
+        .button:hover {
+            background-color: #005fa3;
+        }
+
+        a.button-link {
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+
+<div class="container">
+    <h2>Welcome to the Quora Clone 👋</h2>
+    <p>Explore questions, share answers, and upvote insightful responses!</p>
+    {% if user.is_authenticated %}
+    <p>Start by <a href="/ask">asking a question</a> or browse what others are talking about below.</p>
+    {% else %}
+    <p>Please <a href="/users/login">log in</a> or <a href="/users/register">sign up</a> to participate.</p>
+    {% endif %}
+</div>
+
+    <div class="container">
+        <h2>Trending Questions</h2>
+
+        {% if page_obj %}
+            {% for question in page_obj %}
+                <div class="question">
+                    <div class="question-title">
+                        <a style="text-decoration: none;" href="{% url 'question_detail' question.id %}">{{ question.title }}</a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No questions found.</p>
+        {% endif %}
+
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+
+</body>
+
+{% endblock %}

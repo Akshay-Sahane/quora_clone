@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Quora Clone</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 2rem 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        form p {
+            margin-bottom: 1rem;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .button {
+            background-color: #0077cc;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            width: 100%;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #005fa3;
+        }
+
+        .signup-link {
+            display: block;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .message {
+            text-align: center;
+            color: #cc0000;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    {% for message in messages %}
+    <p class="message">{{ message }}</p>
+    {% endfor %}
+
+    <h2>Login</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ user_form.as_p }}
+        <button type="submit" class="button">Login</button>
+    </form>
+
+    <a href="../register" class="signup-link">Don't have an account? Sign up</a>
+</div>
+</body>
+
+{% endblock main %}
